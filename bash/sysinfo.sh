@@ -8,7 +8,7 @@ hostnamectl | grep 'hostname'
 domainname -A
 
 #Dispaying operating system and version
-egrep '^(VERSION|NAME)=' /etc/0s-release
+egrep '^(VERSION|NAME)=' /etc/os-release
 
 #All IP addresses assign to the network
 ifconfig -a
