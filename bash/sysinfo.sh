@@ -1,17 +1,27 @@
 #sysinfo.sh script
 
-#Displaying a hostname with CLI interface
-hostnamectl
-hostnamectl | grep 'hostname'
+#!/bin/bash
 
-#Domain name
+#Displaying a cat command embibled with variables for data
+cat sysinfo.sh | while read x ; do echo $x ; done
+
+#Output has a blank space
+echo "====================="
+
+#Each data item output is labelled
+fortune | cowsay
+
+#Hostname and domain name reported in separate lines
+hostnamectl | grep 'hostname'
 domainname -A
 
-#Dispaying operating system and version
+#Reflecting a operating system and version
 egrep '^(VERSION|NAME)=' /etc/os-release
 
-#All IP addresses assign to the network
-ifconfig -a
+#IP addresses which receive a data from interface provided by default route
+hostname -I
 
-#Storage
-df -h
+#Storage of root file system free space
+ du -h --max-depth=1
+
+#Output for commands
