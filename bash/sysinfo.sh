@@ -3,7 +3,7 @@
 #!/bin/bash
 
 #Displaying a cat command embibled with variables for data
-cat sysinfo.sh | while read x ; do echo $x ; done
+cat sysinfo.sh > large.tar.gz
 
 #Output has a blank space
 echo "====================="
