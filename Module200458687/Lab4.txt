@@ -1,0 +1,74 @@
+"Lab 4 info"
+function systeminfo {
+Write-Output "Hardware Inforamtion"
+Get-WmiObject Win32_ComputerSystem
+}
+
+function Operating_system {
+Write-Output "OS details"
+get-CimInstance -ClassName Win32_operatingsystem | format-list Name, version
+}
+
+function Processor {
+Write-Output "Processor Information"
+get-WimObject win32_processor | Format-Table MaxClockSpeed, NumberOfCores, Sizes, Description
+}
+
+function Memory {
+Write-Output "RAM Content"
+$cinitapacity = 0
+get-CimInstance -Class win32_physicalmemory |
+foreach {
+New-Object -TypeName psobject -Property @{
+Manufacturer = $_.Manufacturer
+Description = $_.description
+"Size(GB)" = $_.Capacity/1gb
+Bank = $_.banklabel
+Slot = $_.Devicelocator
+}
+$cinitapacity += $_.capacity/1gb
+} |
+Format-table Description, Manufacturer, Bank, "Size(GB)",  Slot -AutoSize
+"Total RAM: ${cinitapacity}GB"
+}
+
+function disk {
+Write-Output "Physical disk information"
+
+$diskdrives = Get-CimInstance CIM_diskdrive
+
+  foreach ($disk in $diskdrives) {
+      $partitions = $disk|get-cimassociatedinstance -resultclassname CIM_diskpartition
+      foreach ($partition in $partitions) {
+            $logicaldisks = $partition | get-cimassociatedinstance -resultclassname CIM_logicaldisk
+            foreach ($logicaldisk in $logicaldisks) {
+                     new-object -typename psobject -property @{Manufacturer=$disk.Manufacturer
+                                                               Location=$partition.deviceid
+                                                               Drive=$logicaldisk.deviceid
+                                                               "Size(GB)"=$logicaldisk.size / 1gb -as [int]
+                                                               }
+           }
+      }
+  }
+
+  }
+
+disk
+function Networkadapter {
+Write-Output "Network adapter details"
+get-ciminstance win32_networkadapterconfiguration | where { $_.ipenabled -eq "True"} | Format-table Index, Description, IPSubnet, IPAddress, DNSdomain, DNSServerSearchOrder
+} 
+
+Networkadapter
+function videoresolution {
+Write-Output "Video resolution info"
+$carobject = Get-Wmiobject win32_Videocontroller
+$carobject = New-Object -TypeName psObject -Property @{
+Name             = $carobject.Name
+Description      = $carobject.Description
+ScreenResolution = [string]($carobject.currentHorizontalResolution) + 'px X' + [string]($carobject.currentVerticalResolution) + 'px'
+} | Format-List Description, Name, ScreenResolution
+$carobject
+}
+
+"Output info"
